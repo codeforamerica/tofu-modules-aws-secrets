@@ -1,11 +1,14 @@
 output "kms_key_alias" {
-  value = aws_kms_alias.secrets.name
+  description = "Alias for of the KMS key used for encryption."
+  value       = aws_kms_alias.secrets.name
 }
 
 output "kms_key_arn" {
-  value = aws_kms_key.secrets.arn
+  description = "ARN for of the KMS key used for encryption."
+  value       = aws_kms_key.secrets.arn
 }
 
 output "secrets" {
-  value = module.secrets_manager
+  description = "A map of created secrets."
+  value       = module.secrets_manager
 }

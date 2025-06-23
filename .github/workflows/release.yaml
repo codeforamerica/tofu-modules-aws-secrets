@@ -1,6 +1,7 @@
 name: Release New Version
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -12,9 +13,14 @@ jobs:
     name: Build new release
     runs-on: ubuntu-latest
     if: ${{ !startsWith(github.event.head_commit.message, 'bump:') }}
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Bump version and create changelog
         id: bump
         uses: commitizen-tools/commitizen-action@master
@@ -38,6 +44,8 @@ jobs:
     name: Release module
     runs-on: ubuntu-latest
     if: startsWith(github.event.head_commit.message, 'bump:')
+    permissions:
+      contents: write
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
