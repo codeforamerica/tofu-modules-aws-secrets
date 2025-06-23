@@ -1,10 +1,13 @@
 module "secrets_manager" {
   source  = "terraform-aws-modules/secrets-manager/aws"
-  version = "~> 1.1"
+  version = "~> 1.3"
 
   for_each = var.secrets
 
-  name_prefix             = each.value.name != "" ? "${each.value.name}-" : "${var.project}/${var.environment}/${var.service}/${each.key}-"
+  name_prefix = (each.value.name != ""
+    ? "${each.value.name}-"
+    : join("/", compact([var.project, var.environment, var.service, "${each.key}-"]))
+  )
   create_random_password  = each.value.create_random_password
   description             = each.value.description
   recovery_window_in_days = each.value.recovery_window
