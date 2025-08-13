@@ -1,3 +1,9 @@
+variable "add_suffix" {
+  type        = bool
+  description = "Whether to add a suffix to secret names."
+  default     = true
+}
+
 variable "environment" {
   type        = string
   description = "Environment for the deployment."
@@ -23,9 +29,10 @@ variable "project" {
 # TODO: Support rotation.
 variable "secrets" {
   type = map(object({
+    add_suffix             = optional(bool, null)
     create_random_password = optional(bool, false)
     description            = string
-    name                   = optional(string, "")
+    name                   = optional(string, null)
     recovery_window        = optional(number, 30)
     start_value            = optional(string, "{}")
   }))
