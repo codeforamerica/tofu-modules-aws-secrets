@@ -4,7 +4,7 @@ module "secrets_manager" {
 
   for_each = var.secrets
 
-  name = coalesce(each.value.add_suffix, var.add_suffix) ? null : coalesce(each.value.name, "${var.project}/${var.environment}/${var.service}/${each.key}")
+  name                    = coalesce(each.value.add_suffix, var.add_suffix) ? null : coalesce(each.value.name, "${var.project}/${var.environment}/${var.service}/${each.key}")
   name_prefix             = coalesce(each.value.add_suffix, var.add_suffix) ? "${coalesce(each.value.name, "${var.project}/${var.environment}/${var.service}/${each.key}")}-" : null
   create_random_password  = each.value.create_random_password
   description             = each.value.description
