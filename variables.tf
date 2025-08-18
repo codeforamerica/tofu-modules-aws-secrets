@@ -1,6 +1,6 @@
 variable "add_suffix" {
   type        = bool
-  description = "Whether to add a suffix to secret names."
+  description = "Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult."
   default     = true
 }
 
