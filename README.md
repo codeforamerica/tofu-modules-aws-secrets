@@ -20,7 +20,7 @@ to match your desired configuration. For example:
 
 ```hcl
 module "secrets" {
-  source = "github.com/codeforamerica/tofu-modules-aws-secrets?ref=1.0.0"
+  source = "github.com/codeforamerica/tofu-modules-aws-secrets?ref=1.1.0"
 
   project     = "my-project"
   environment = "dev"
@@ -56,14 +56,15 @@ tofu init -upgrade
 
 ## Inputs
 
-| Name                | Description                                                                                 | Type          | Default | Required |
-|---------------------|---------------------------------------------------------------------------------------------|---------------|---------|----------|
-| project             | Name of the project.                                                                        | `string`      | n/a     | yes      |
-| environment         | Environment for the project.                                                                | `string`      | `"dev"` | no       |
-| key_recovery_period | Number of days to recover the KMS key after deletion.                                       | `number`      | `30`    | no       |
-| [secrets]           | Secrets to be created.                                                                      | `map(object)` | `{}`    | no       |
-| service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"` | `string`      | n/a     | no       |
-| tags                | Optional tags to be applied to all resources.                                               | `list`        | `[]`    | no       |
+| Name                | Description                                                                                                                                     | Type          | Default | Required |
+|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------|----------|
+| project             | Name of the project.                                                                                                                            | `string`      | n/a     | yes      |
+| add_suffix          | Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult. | `bool`        | `true`  | no       |
+| environment         | Environment for the project.                                                                                                                    | `string`      | `"dev"` | no       |
+| key_recovery_period | Number of days to recover the KMS key after deletion.                                                                                           | `number`      | `30`    | no       |
+| [secrets]           | Secrets to be created.                                                                                                                          | `map(object)` | `{}`    | no       |
+| service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                     | `string`      | n/a     | no       |
+| tags                | Optional tags to be applied to all resources.                                                                                                   | `list`        | `[]`    | no       |
 
 ### secrets
 
