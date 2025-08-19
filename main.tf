@@ -1,6 +1,6 @@
 module "secrets_manager" {
   source  = "terraform-aws-modules/secrets-manager/aws"
-  version = "~> 2.0"
+  version = "~> 1.1"
 
   for_each = var.secrets
 
