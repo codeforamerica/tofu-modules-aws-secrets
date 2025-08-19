@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][changelog] and this project adheres to
 [Semantic Versioning][semver].
 
-## Unreleased
+## 2.0.0 (2025-08-19)
 
 > [!CAUTION]
 > This release fixes a bug that would case a double slash (`//`) in the secret
@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog][changelog] and this project adheres to
 > resetting its value. If you wish to avoid this, you can explicitly set the
 > [`name`][secrets] for your secrets to match the previous format of
 > `<project>/<environment>//<name>`.
+
+### Fix
+
+- Exclude service from the secret path if it isn't set. (#4)
 
 ## 1.1.0 (2025-08-18)
 
