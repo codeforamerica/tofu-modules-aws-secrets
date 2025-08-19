@@ -116,7 +116,7 @@ applied.
 |---------------|-----------------------------------------------|---------------|
 | kms_key_alias | Alias for of the KMS key used for encryption. | `string`      |
 | kms_key_arn   | ARN for of the KMS key used for encryption.   | `string`      |
-| secrets       | A map of created secrets.                     | `map(object}` |
+| secrets       | A map of created secrets.                     | `map(object)` |
 
 [badge-checks]: https://github.com/codeforamerica/tofu-modules-aws-secrets/actions/workflows/main.yaml/badge.svg
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release
