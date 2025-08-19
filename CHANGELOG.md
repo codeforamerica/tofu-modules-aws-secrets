@@ -2,9 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to
-[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog][changelog] and this project adheres to
+[Semantic Versioning][semver].
+
+## Unreleased
+
+> [!CAUTION]
+> This release fixes a bug that would case a double slash (`//`) in the secret
+> name when the [`service`][inputs] input was not provided. If you are using the
+> `service` input, you can ignore this warning.
+>
+> If you are not using the `service` input, this version will result in your
+> secret names changing, which will force a replacement of the resource and
+> resetting its value. If you wish to avoid this, you can explicitly set the
+> [`name`][secrets] for your secrets to match the previous format of
+> `<project>/<environment>//<name>`.
 
 ## 1.1.0 (2025-08-18)
 
@@ -17,3 +29,8 @@ and this project adheres to
 ### Feat
 
 - Initial release. (#1)
+
+[changelog]: https://keepachangelog.com/en/1.1.0/
+[inputs]: README.md#inputs
+[secrets]: README.md#secrets
+[semver]: https://semver.org/spec/v2.0.0.html
