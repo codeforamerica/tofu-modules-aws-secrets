@@ -15,12 +15,16 @@ more secrets.
 
 ## Usage
 
+> [!CAUTION]
+> Version 2.0.0 of this module is a breaking change from previous versions.
+> Please read the [release notes][2.0.0] for more information.
+
 Add this module to your `main.tf` (or appropriate) file and configure the inputs
 to match your desired configuration. For example:
 
 ```hcl
 module "secrets" {
-  source = "github.com/codeforamerica/tofu-modules-aws-secrets?ref=1.1.0"
+  source = "github.com/codeforamerica/tofu-modules-aws-secrets?ref=2.0.0"
 
   project     = "my-project"
   environment = "dev"
@@ -118,6 +122,7 @@ applied.
 | kms_key_arn   | ARN for of the KMS key used for encryption.   | `string`      |
 | secrets       | A map of created secrets.                     | `map(object)` |
 
+[2.0.0]: CHANGELOG.md#200-2025-08-19
 [badge-checks]: https://github.com/codeforamerica/tofu-modules-aws-secrets/actions/workflows/main.yaml/badge.svg
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release
 [code-checks]: https://github.com/codeforamerica/tofu-modules-aws-secrets/actions/workflows/main.yaml
