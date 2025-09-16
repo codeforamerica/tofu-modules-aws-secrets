@@ -109,7 +109,7 @@ applied.
 | Name                   | Description                                                   | Type     | Default | Required |
 |------------------------|---------------------------------------------------------------|----------|---------|----------|
 | description            | Description of the secret.                                    | `string` | n/a     | yes      |
-| create_random_password | Creates a random password as the staring value.               | `bool`   | `false` | no       |
+| create_random_password | Creates a random password as the starting value.               | `bool`   | `false` | no       |
 | name                   | Name to use as the prefix for the secret.                     | `string` | `""`    | no       |
 | recovery_window        | Number of days that a secret can be recovered after deletion. | `string` | `30`    | no       |
 | start_value            | Value to be set into the secret at creation.                  | `string` | `"{}"`  | no       |
