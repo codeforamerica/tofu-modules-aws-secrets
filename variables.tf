@@ -23,13 +23,13 @@ variable "key_recovery_period" {
   type        = number
   default     = 30
   description = <<-EOT
-    Recovery period for deleted KMS key, in days. Must be between 7 and 30, or 0
-    to disable recovery. Only used if `create_kms_key` is set to `true`.
+    Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only
+    used if `create_kms_key` is set to `true`.
     EOT
 
   validation {
-    condition     = var.key_recovery_period == 0 || (var.key_recovery_period > 6 && var.key_recovery_period < 31)
-    error_message = "Recovery period must be between 7 and 30, or 0 to disable recovery."
+    condition     = var.key_recovery_period > 6 && var.key_recovery_period < 31
+    error_message = "Key recovery period must be between 7 and 30."
   }
 }
 
@@ -47,6 +47,21 @@ variable "project" {
   description = "Project that these resources are supporting."
 }
 
+variable "recovery_window" {
+  type        = number
+  default     = 30
+  description = <<-EOT
+    Recovery window for deleted secrets, in days. Must be between 7 and 30, or 0
+    to disable recovery when the secret is deleted. This value can be overridden
+    for each secret by setting the `recovery_window` for the secret.
+    EOT
+
+  validation {
+    condition     = var.recovery_window == 0 || (var.recovery_window > 6 && var.recovery_window < 31)
+    error_message = "Recovery window must be between 7 and 30, or 0 to disable recovery."
+  }
+}
+
 # TODO: Support rotation.
 variable "secrets" {
   type = map(object({
@@ -54,7 +69,7 @@ variable "secrets" {
     create_random_password = optional(bool, false)
     description            = string
     name                   = optional(string, null)
-    recovery_window        = optional(number, 30)
+    recovery_window        = optional(number, null)
     start_value            = optional(string, "{}")
   }))
 
