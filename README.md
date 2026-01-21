@@ -64,17 +64,17 @@ kms_key_arn    = aws_kms_key.example.arn
 
 ## Inputs
 
-| Name                | Description                                                                                                                                     | Type          | Default | Required    |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | ----------- |
-| project             | Name of the project.                                                                                                                            | `string`      | n/a     | yes         |
-| kms_key_arn         | ARN for an existing KMS key to use for encryption. Required if `create_kms_key` is set to `false`; ignored otherwise.                           | `string`      | `null`  | conditional |
-| add_suffix          | Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult. | `bool`        | `true`  | no          |
-| create_kms_key      | Whether to create a new KMS key for encrypting secrets. If set to `false`, `kms_key_arn` must be provided.                                      | `bool`        | `true`  | no          |
-| environment         | Environment for the project.                                                                                                                    | `string`      | `"dev"` | no          |
-| key_recovery_period | Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only used if `create_kms_key` is set to `true`.                         | `number`      | `30`    | no          |
-| [secrets]           | Secrets to be created.                                                                                                                          | `map(object)` | `{}`    | no          |
-| service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                     | `string`      | n/a     | no          |
-| tags                | Optional tags to be applied to all resources.                                                                                                   | `list`        | `[]`    | no          |
+| Name                | Description                                                                                                                                       | Type          | Default | Required    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | ----------- |
+| project             | Name of the project.                                                                                                                              | `string`      | n/a     | yes         |
+| kms_key_arn         | ARN for an existing KMS key to use for encryption. Required if `create_kms_key` is set to `false`; ignored otherwise.                             | `string`      | `null`  | conditional |
+| add_suffix          | Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult.   | `bool`        | `true`  | no          |
+| create_kms_key      | Whether to create a new KMS key for encrypting secrets. If set to `false`, `kms_key_arn` must be provided.                                        | `bool`        | `true`  | no          |
+| environment         | Environment for the project.                                                                                                                      | `string`      | `"dev"` | no          |
+| key_recovery_period | Recovery period for deleted KMS key, in days. Must be between 7 and 30, or 0 to disable recovery. Only used if `create_kms_key` is set to `true`. | `number`      | `30`    | no          |
+| [secrets]           | Secrets to be created.                                                                                                                            | `map(object)` | `{}`    | no          |
+| service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                       | `string`      | n/a     | no          |
+| tags                | Optional tags to be applied to all resources.                                                                                                     | `list`        | `[]`    | no          |
 
 ### secrets
 

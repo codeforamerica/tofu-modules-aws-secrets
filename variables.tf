@@ -23,13 +23,13 @@ variable "key_recovery_period" {
   type        = number
   default     = 30
   description = <<-EOT
-    Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only
-    used if `create_kms_key` is set to `true`.
+    Recovery period for deleted KMS key, in days. Must be between 7 and 30, or 0
+    to disable recovery. Only used if `create_kms_key` is set to `true`.
     EOT
 
   validation {
-    condition     = var.key_recovery_period > 6 && var.key_recovery_period < 31
-    error_message = "Recovery period must be between 7 and 30."
+    condition     = var.key_recovery_period == 0 || (var.key_recovery_period > 6 && var.key_recovery_period < 31)
+    error_message = "Recovery period must be between 7 and 30, or 0 to disable recovery."
   }
 }
 
