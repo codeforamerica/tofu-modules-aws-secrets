@@ -21,6 +21,15 @@ variable "key_recovery_period" {
   }
 }
 
+variable "kms_key_arn" {
+  type        = string
+  description = <<-EOT
+    Optional KMS key ARN to use for encryption. If not provided, a new KMS key
+    will be created.
+    EOT
+  default     = null
+}
+
 variable "project" {
   type        = string
   description = "Project that these resources are supporting."

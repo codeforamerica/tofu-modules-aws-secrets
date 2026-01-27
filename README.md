@@ -61,11 +61,12 @@ tofu init -upgrade
 ## Inputs
 
 | Name                | Description                                                                                                                                     | Type          | Default | Required |
-|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------|----------|
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | -------- |
 | project             | Name of the project.                                                                                                                            | `string`      | n/a     | yes      |
 | add_suffix          | Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult. | `bool`        | `true`  | no       |
 | environment         | Environment for the project.                                                                                                                    | `string`      | `"dev"` | no       |
 | key_recovery_period | Number of days to recover the KMS key after deletion.                                                                                           | `number`      | `30`    | no       |
+| kms_key_arn         | Optional KMS key ARN to use for encryption. If not provided, a new KMS key will be created.                                                     | `string`      | `null`  | no       |
 | [secrets]           | Secrets to be created.                                                                                                                          | `map(object)` | `{}`    | no       |
 | service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                     | `string`      | n/a     | no       |
 | tags                | Optional tags to be applied to all resources.                                                                                                   | `list`        | `[]`    | no       |
@@ -107,7 +108,7 @@ This would result in a key named `my/example/key-` before the random suffix is
 applied.
 
 | Name                   | Description                                                   | Type     | Default | Required |
-|------------------------|---------------------------------------------------------------|----------|---------|----------|
+| ---------------------- | ------------------------------------------------------------- | -------- | ------- | -------- |
 | description            | Description of the secret.                                    | `string` | n/a     | yes      |
 | create_random_password | Creates a random password as the staring value.               | `bool`   | `false` | no       |
 | name                   | Name to use as the prefix for the secret.                     | `string` | `""`    | no       |
@@ -116,11 +117,11 @@ applied.
 
 ## Outputs
 
-| Name          | Description                                   | Type          |
-|---------------|-----------------------------------------------|---------------|
-| kms_key_alias | Alias for of the KMS key used for encryption. | `string`      |
-| kms_key_arn   | ARN for of the KMS key used for encryption.   | `string`      |
-| secrets       | A map of created secrets.                     | `map(object)` |
+| Name          | Description                                                                      | Type          |
+| ------------- | -------------------------------------------------------------------------------- | ------------- |
+| kms_key_alias | Alias for the created KMS key. If `kms_key_arn`is provided, this will be `null`. | `string`      |
+| kms_key_arn   | ARN of the KMS key used for encryption.                                          | `string`      |
+| secrets       | A map of created secrets.                                                        | `map(object)` |
 
 [2.0.0]: CHANGELOG.md#200-2025-08-19
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release

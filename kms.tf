@@ -1,4 +1,6 @@
 resource "aws_kms_key" "secrets" {
+  for_each = var.kms_key_arn == null ? toset(["this"]) : toset([])
+
   description             = "Secrets encryption key for ${var.project} ${var.environment}"
   deletion_window_in_days = var.key_recovery_period
   enable_key_rotation     = true
@@ -12,6 +14,8 @@ resource "aws_kms_key" "secrets" {
 }
 
 resource "aws_kms_alias" "secrets" {
+  for_each = var.kms_key_arn == null ? toset(["this"]) : toset([])
+
   name          = "alias/${var.project}/${var.environment}/${var.service != "" ? "${var.service}/" : ""}secrets"
-  target_key_id = aws_kms_key.secrets.id
+  target_key_id = aws_kms_key.secrets["this"].id
 }
