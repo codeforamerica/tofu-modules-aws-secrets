@@ -1,6 +1,6 @@
 # AWS Secrets Module
 
-[![Main Checks][badge-checks]][code-checks] [![GitHub Release][badge-release]][latest-release]
+[![GitHub Release][badge-release]][latest-release]
 
 This module manages secrets in AWS through [Secrets Manager][secrets-manager].
 It will create a KMS key for encrypting secrets, and optionally create one or
@@ -123,9 +123,7 @@ applied.
 | secrets       | A map of created secrets.                     | `map(object)` |
 
 [2.0.0]: CHANGELOG.md#200-2025-08-19
-[badge-checks]: https://github.com/codeforamerica/tofu-modules-aws-secrets/actions/workflows/main.yaml/badge.svg
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release
-[code-checks]: https://github.com/codeforamerica/tofu-modules-aws-secrets/actions/workflows/main.yaml
 [latest-release]: https://github.com/codeforamerica/tofu-modules-aws-secrets/releases/latest
 [secrets]: #secrets
 [secrets-manager]: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html
