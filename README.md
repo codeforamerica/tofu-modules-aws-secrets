@@ -52,10 +52,14 @@ tofu init
 tofu plan
 ```
 
-To update the source for this module, pass `-upgrade` to `tofu init`:
+### Encryption
 
-```bash
-tofu init -upgrade
+By default, this module will create a new KMS key to encrypt the secrets. If you
+already have a key you'd like to use, you can override this behavior:
+
+```hcl
+create_kms_key = false
+kms_key_arn    = aws_kms_key.example.arn
 ```
 
 ## Inputs
