@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][changelog] and this project adheres to
 [Semantic Versioning][semver].
 
+## 2.1.0 (2026-01-28)
+
+### Feat
+
+- Allow overriding the default recovery window. (#9)
+- Allow using an existing KMS key. (#10)
+
 ## 2.0.0 (2025-08-19)
 
 > [!CAUTION]
