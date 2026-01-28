@@ -14,7 +14,7 @@ module "secrets_manager" {
   )
   create_random_password  = each.value.create_random_password
   description             = each.value.description
-  recovery_window_in_days = each.value.recovery_window
+  recovery_window_in_days = coalesce(each.value.recovery_window, var.recovery_window)
   kms_key_id              = local.kms_key_id
   secret_string           = each.value.start_value
 
