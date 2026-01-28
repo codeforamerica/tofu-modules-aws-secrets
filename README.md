@@ -52,23 +52,29 @@ tofu init
 tofu plan
 ```
 
-To update the source for this module, pass `-upgrade` to `tofu init`:
+### Encryption
 
-```bash
-tofu init -upgrade
+By default, this module will create a new KMS key to encrypt the secrets. If you
+already have a key you'd like to use, you can override this behavior:
+
+```hcl
+create_kms_key = false
+kms_key_arn    = aws_kms_key.example.arn
 ```
 
 ## Inputs
 
-| Name                | Description                                                                                                                                     | Type          | Default | Required |
-|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|---------------|---------|----------|
-| project             | Name of the project.                                                                                                                            | `string`      | n/a     | yes      |
-| add_suffix          | Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult. | `bool`        | `true`  | no       |
-| environment         | Environment for the project.                                                                                                                    | `string`      | `"dev"` | no       |
-| key_recovery_period | Number of days to recover the KMS key after deletion.                                                                                           | `number`      | `30`    | no       |
-| [secrets]           | Secrets to be created.                                                                                                                          | `map(object)` | `{}`    | no       |
-| service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                     | `string`      | n/a     | no       |
-| tags                | Optional tags to be applied to all resources.                                                                                                   | `list`        | `[]`    | no       |
+| Name                | Description                                                                                                                                     | Type          | Default | Required    |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- | ----------- |
+| project             | Name of the project.                                                                                                                            | `string`      | n/a     | yes         |
+| kms_key_arn         | ARN for an existing KMS key to use for encryption. Required if `create_kms_key` is set to `false`; ignored otherwise.                           | `string`      | `null`  | conditional |
+| add_suffix          | Apply a random suffix to the secret name. Useful when secrets may need to be replaced, but makes identify secrets by name alone more difficult. | `bool`        | `true`  | no          |
+| create_kms_key      | Whether to create a new KMS key for encrypting secrets. If set to `false`, `kms_key_arn` must be provided.                                      | `bool`        | `true`  | no          |
+| environment         | Environment for the project.                                                                                                                    | `string`      | `"dev"` | no          |
+| key_recovery_period | Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only used if `create_kms_key` is set to `true`.                         | `number`      | `30`    | no          |
+| [secrets]           | Secrets to be created.                                                                                                                          | `map(object)` | `{}`    | no          |
+| service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                     | `string`      | n/a     | no          |
+| tags                | Optional tags to be applied to all resources.                                                                                                   | `list`        | `[]`    | no          |
 
 ### secrets
 
@@ -107,7 +113,7 @@ This would result in a key named `my/example/key-` before the random suffix is
 applied.
 
 | Name                   | Description                                                   | Type     | Default | Required |
-|------------------------|---------------------------------------------------------------|----------|---------|----------|
+| ---------------------- | ------------------------------------------------------------- | -------- | ------- | -------- |
 | description            | Description of the secret.                                    | `string` | n/a     | yes      |
 | create_random_password | Creates a random password as the staring value.               | `bool`   | `false` | no       |
 | name                   | Name to use as the prefix for the secret.                     | `string` | `""`    | no       |
@@ -116,11 +122,11 @@ applied.
 
 ## Outputs
 
-| Name          | Description                                   | Type          |
-|---------------|-----------------------------------------------|---------------|
-| kms_key_alias | Alias for of the KMS key used for encryption. | `string`      |
-| kms_key_arn   | ARN for of the KMS key used for encryption.   | `string`      |
-| secrets       | A map of created secrets.                     | `map(object)` |
+| Name          | Description                                                                      | Type          |
+| ------------- | -------------------------------------------------------------------------------- | ------------- |
+| kms_key_alias | Alias for the created KMS key. If `kms_key_arn`is provided, this will be `null`. | `string`      |
+| kms_key_arn   | ARN of the KMS key used for encryption.                                          | `string`      |
+| secrets       | A map of created secrets.                                                        | `map(object)` |
 
 [2.0.0]: CHANGELOG.md#200-2025-08-19
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release

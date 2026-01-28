@@ -1,11 +1,14 @@
 output "kms_key_alias" {
-  description = "Alias for of the KMS key used for encryption."
-  value       = aws_kms_alias.secrets.name
+  description = <<-EOT
+    Alias for the created KMS key. If `kms_key_arn`is provided, this will be
+    `null`.
+    EOT
+  value       = var.create_kms_key ? aws_kms_alias.secrets["this"].name : null
 }
 
 output "kms_key_arn" {
-  description = "ARN for of the KMS key used for encryption."
-  value       = aws_kms_key.secrets.arn
+  description = "ARN of the KMS key used for encryption."
+  value       = local.kms_key_arn
 }
 
 output "secrets" {
