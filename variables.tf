@@ -4,6 +4,15 @@ variable "add_suffix" {
   default     = true
 }
 
+variable "create_kms_key" {
+  type        = bool
+  description = <<-EOT
+    Whether to create a new KMS key for encrypting secrets. If set to `false`,
+    `kms_key_arn` must be provided.
+    EOT
+  default     = true
+}
+
 variable "environment" {
   type        = string
   description = "Environment for the deployment."
@@ -13,7 +22,10 @@ variable "environment" {
 variable "key_recovery_period" {
   type        = number
   default     = 30
-  description = "Recovery period for deleted KMS keys in days. Must be between 7 and 30."
+  description = <<-EOT
+    Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only
+    used if `create_kms_key` is set to `true`.
+    EOT
 
   validation {
     condition     = var.key_recovery_period > 6 && var.key_recovery_period < 31
@@ -24,8 +36,8 @@ variable "key_recovery_period" {
 variable "kms_key_arn" {
   type        = string
   description = <<-EOT
-    Optional KMS key ARN to use for encryption. If not provided, a new KMS key
-    will be created.
+    ARN for an existing KMS key to use for encryption. Required if
+    `create_kms_key` is set to `false`; ignored otherwise.
     EOT
   default     = null
 }

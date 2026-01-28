@@ -3,7 +3,7 @@ output "kms_key_alias" {
     Alias for the created KMS key. If `kms_key_arn`is provided, this will be
     `null`.
     EOT
-  value       = var.kms_key_arn == null ? aws_kms_alias.secrets["this"].name : null
+  value       = var.create_kms_key ? aws_kms_alias.secrets["this"].name : null
 }
 
 output "kms_key_arn" {
