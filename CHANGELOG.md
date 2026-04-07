@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][changelog] and this project adheres to
 [Semantic Versioning][semver].
 
+## 2.1.1 (2026-04-07)
+
+### Fix
+
+- Add missing `moved` blocks for updated KMS addresses. (#14)
+
 ## 2.1.0 (2026-01-28)
 
 ### Feat
