@@ -62,6 +62,17 @@ variable "recovery_window" {
   }
 }
 
+variable "replica_region" {
+  type        = string
+  description = <<-EOT
+    Region to replicate the KMS key and secrets to. If not specified, no
+    replicas will be created. Requires `create_kms_key` to be `true`. Setting
+    this on an existing deployment replaces the KMS key, since a single-Region
+    key can't be converted to a multi-Region key.
+    EOT
+  default     = null
+}
+
 # TODO: Support rotation.
 variable "secrets" {
   type = map(object({
