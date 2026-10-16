@@ -4,7 +4,7 @@ resource "aws_kms_key" "secrets" {
   description             = "Secrets encryption key for ${var.project} ${var.environment}"
   deletion_window_in_days = var.key_recovery_period
   enable_key_rotation     = true
-  multi_region            = var.replica_region != null
+  multi_region            = var.enable_replication
   policy = jsonencode(yamldecode(templatefile("${path.module}/templates/key-policy.yaml.tftpl", {
     account_id : data.aws_caller_identity.identity.account_id,
     partition : data.aws_partition.current.partition,
@@ -12,6 +12,12 @@ resource "aws_kms_key" "secrets" {
   })))
 
   tags = var.tags
+
+  # Keep the old key enabled until the secrets have moved to the new one, so
+  # that Secrets Manager can decrypt and re-encrypt the existing versions.
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_kms_alias" "secrets" {
@@ -25,7 +31,7 @@ resource "aws_kms_alias" "secrets" {
 # policy is rendered for the replica region so that Secrets Manager can use the
 # key there.
 resource "aws_kms_replica_key" "secrets" {
-  for_each = var.create_kms_key && var.replica_region != null ? toset(["this"]) : toset([])
+  for_each = var.create_kms_key && var.enable_replication ? toset(["this"]) : toset([])
 
   region                  = var.replica_region
   description             = "Multi-Region replica of the secrets encryption key for ${var.project} ${var.environment}"
@@ -41,7 +47,7 @@ resource "aws_kms_replica_key" "secrets" {
 }
 
 resource "aws_kms_alias" "secrets_replica" {
-  for_each = var.create_kms_key && var.replica_region != null ? toset(["this"]) : toset([])
+  for_each = var.create_kms_key && var.enable_replication ? toset(["this"]) : toset([])
 
   region        = var.replica_region
   name          = "alias/${var.project}/${var.environment}/${var.service != "" ? "${var.service}/" : ""}secrets"

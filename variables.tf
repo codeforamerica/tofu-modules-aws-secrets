@@ -13,6 +13,17 @@ variable "create_kms_key" {
   default     = true
 }
 
+variable "enable_replication" {
+  type        = bool
+  description = <<-EOT
+    Whether to replicate the KMS key and secrets to `replica_region`. Requires
+    `create_kms_key` to be `true`. Enabling this on an existing deployment
+    replaces the KMS key, since a single-Region key can't be converted to a
+    multi-Region key.
+    EOT
+  default     = false
+}
+
 variable "environment" {
   type        = string
   description = "Environment for the deployment."
@@ -65,12 +76,16 @@ variable "recovery_window" {
 variable "replica_region" {
   type        = string
   description = <<-EOT
-    Region to replicate the KMS key and secrets to. If not specified, no
-    replicas will be created. Requires `create_kms_key` to be `true`. Setting
-    this on an existing deployment replaces the KMS key, since a single-Region
-    key can't be converted to a multi-Region key.
+    Region to replicate the KMS key and secrets to. Only used if
+    `enable_replication` is set to `true`. Must be a US region, and must be
+    different from the current region.
     EOT
-  default     = null
+  default     = "us-west-2"
+
+  validation {
+    condition     = contains(["us-east-1", "us-east-2", "us-west-1", "us-west-2"], var.replica_region)
+    error_message = "Replica region must be one of us-east-1, us-east-2, us-west-1, or us-west-2."
+  }
 }
 
 # TODO: Support rotation.
