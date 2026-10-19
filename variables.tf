@@ -83,9 +83,9 @@ variable "replication" {
 
     - `enabled`: Whether to replicate the secrets to another region.
     - `kms_arn`: ARN of an existing KMS key in the replica region to encrypt the
-      replicas. Required when `create_kms_key` is `false`. When not set, the
-      module replicates its own key if it's multi-Region, or creates a new key
-      in the replica region if it isn't.
+      replicas. Required when `create_kms_key` is `false`, and can't be set
+      otherwise. When the module creates the key, it replicates that key if
+      it's multi-Region, or creates a new key in the replica region if it isn't.
     - `region`: Region to replicate to. Defaults to `us-west-2`, or `us-east-1`
       if the secrets are in a `us-west-*` region.
     EOT

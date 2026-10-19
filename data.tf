@@ -10,6 +10,11 @@ data "aws_region" "current" {
     }
 
     postcondition {
+      condition     = var.replication.kms_arn == null || !var.create_kms_key
+      error_message = "replication.kms_arn can only be set when create_kms_key is false."
+    }
+
+    postcondition {
       condition     = !var.replication.enabled || var.replication.region != self.region
       error_message = "replication.region must be different from the current region."
     }
