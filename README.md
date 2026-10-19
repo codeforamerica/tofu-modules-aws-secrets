@@ -76,9 +76,10 @@ replication = {
 
 The KMS key for the replicas is chosen in this order:
 
-1. If you're using an existing key for the secrets (`create_kms_key = false`),
-   set `kms_arn` to a key in the replica region. It's required in that case,
-   and can't be set otherwise.
+1. If `kms_arn` is set, that key is used. It's required when using an existing
+   key for the secrets (`create_kms_key = false`). When the module creates the
+   primary key, `kms_arn` must be known at plan time, so create that key in an
+   earlier apply.
 1. If the module created a multi-Region key, a replica of that key is created in
    the replica region.
 1. If the module created a single-Region key, a new single-Region key is created
@@ -89,7 +90,7 @@ The KMS key for the replicas is chosen in this order:
 | Name    | Description                                                                         | Type     | Default | Required    |
 | ------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----------- |
 | enabled | Whether to replicate the secrets to another region.                                 | `bool`   | `false` | no          |
-| kms_arn | ARN of a KMS key in the replica region. Only used when `create_kms_key` is `false`. | `string` | `null`  | conditional |
+| kms_arn | ARN of a KMS key in the replica region. Required when `create_kms_key` is `false`.  | `string` | `null`  | conditional |
 | region  | Region to replicate to. Must be `us-east-1`, `us-east-2`, `us-west-1`, or `us-west-2`. | `string` | `null`  | no          |
 
 ## Inputs

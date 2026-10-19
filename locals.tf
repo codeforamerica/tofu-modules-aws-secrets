@@ -5,15 +5,17 @@ locals {
   # Default to us-west-2, or us-east-1 if the secrets are already out west.
   replica_region = coalesce(var.replication.region, startswith(data.aws_region.current.region, "us-west") ? "us-east-1" : "us-west-2")
 
-  # Where the replicas' key comes from. A caller using their own primary key
-  # provides the replica key too. Otherwise a module-created primary key is
-  # replicated when it's multi-Region, and a new key is created when it isn't.
-  # The key's actual multi_region attribute is used, since kms_multi_region is
-  # ignored after the key is created. This only depends on values known at plan
-  # time, so callers can create their replica key in the same apply.
+  # Where the replicas' key comes from. A caller-provided key always wins.
+  # Otherwise a module-created primary key is replicated when it's
+  # multi-Region, and a new key is created when it isn't. The key's actual
+  # multi_region attribute is used, since kms_multi_region is ignored after the
+  # key is created. create_kms_key is checked first because it's always known at
+  # plan time, so callers using their own primary key can create the replica key
+  # in the same apply.
   replica_kms_source = (
     !var.replication.enabled ? "none"
     : !var.create_kms_key ? "provided"
+    : var.replication.kms_arn != null ? "provided"
     : aws_kms_key.secrets["this"].multi_region ? "replica"
     : "create"
   )
