@@ -62,6 +62,37 @@ create_kms_key = false
 kms_key_arn    = aws_kms_key.example.arn
 ```
 
+### Replication
+
+To make secrets available in a second region for disaster recovery, enable
+replication. Each secret is replicated to `us-west-2`, or to `us-east-1` if the
+secrets are in a `us-west-*` region. Set `region` to choose a different one.
+
+```hcl
+replication = {
+  enabled = true
+}
+```
+
+The KMS key for the replicas is chosen in this order:
+
+1. If `kms_arn` is set, that key is used. It's required when using an existing
+   key for the secrets (`create_kms_key = false`). When the module creates the
+   primary key, `kms_arn` must be known at plan time, so create that key in an
+   earlier apply.
+1. If the module created a multi-Region key, a replica of that key is created in
+   the replica region.
+1. If the module created a single-Region key, a new single-Region key is created
+   in the replica region. The plan emits a warning when `kms_multi_region` is
+   `true` but the existing key is single-Region, since that setting can't be
+   changed after the key is created.
+
+| Name    | Description                                                                         | Type     | Default | Required    |
+| ------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----------- |
+| enabled | Whether to replicate the secrets to another region.                                 | `bool`   | `false` | no          |
+| kms_arn | ARN of a KMS key in the replica region. Required when `create_kms_key` is `false`.  | `string` | `null`  | conditional |
+| region  | Region to replicate to. Must be `us-east-1`, `us-east-2`, `us-west-1`, or `us-west-2`. | `string` | `null`  | no          |
+
 ## Inputs
 
 | Name                | Description                                                                                                                                                                                                                | Type          | Default | Required    |
@@ -72,7 +103,9 @@ kms_key_arn    = aws_kms_key.example.arn
 | create_kms_key      | Whether to create a new KMS key for encrypting secrets. If set to `false`, `kms_key_arn` must be provided.                                                                                                                 | `bool`        | `true`  | no          |
 | environment         | Environment for the project.                                                                                                                                                                                               | `string`      | `"dev"` | no          |
 | key_recovery_period | Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only used if `create_kms_key` is set to `true`.                                                                                                    | `number`      | `30`    | no          |
+| kms_multi_region    | Whether the KMS key is created as multi-Region. Only used if `create_kms_key` is `true`, and only at creation.                                                                                                            | `bool`        | `true`  | no          |
 | recovery_window     | Recovery window for deleted secrets, in days. Must be between 7 and 30, or 0 to disable recovery when the secret is deleted. This value can be overridden for each secret by setting the `recovery_window` for the secret. | `number`      | `30`    | no          |
+| [replication]       | Cross-region replication settings for the secrets.                                                                                                                                                                         | `object`      | `{}`    | no          |
 | [secrets]           | Secrets to be created.                                                                                                                                                                                                     | `map(object)` | `{}`    | no          |
 | service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                                                                                                | `string`      | n/a     | no          |
 | tags                | Optional tags to be applied to all resources.                                                                                                                                                                              | `list`        | `[]`    | no          |
@@ -127,10 +160,12 @@ applied.
 | ------------- | -------------------------------------------------------------------------------- | ------------- |
 | kms_key_alias | Alias for the created KMS key. If `kms_key_arn`is provided, this will be `null`. | `string`      |
 | kms_key_arn   | ARN of the KMS key used for encryption.                                          | `string`      |
+| kms_replica_key_arn | ARN of the KMS key used to encrypt the replicas. If replication isn't enabled, this will be `null`. | `string` |
 | secrets       | A map of created secrets.                                                        | `map(object)` |
 
 [2.0.0]: CHANGELOG.md#200-2025-08-19
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release
 [latest-release]: https://github.com/codeforamerica/tofu-modules-aws-secrets/releases/latest
+[replication]: #replication
 [secrets]: #secrets
 [secrets-manager]: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html

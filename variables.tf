@@ -42,6 +42,16 @@ variable "kms_key_arn" {
   default     = null
 }
 
+variable "kms_multi_region" {
+  type        = bool
+  description = <<-EOT
+    Whether the KMS key is created as multi-Region. Only used if
+    `create_kms_key` is set to `true`. This setting can only be configured at
+    creation; changing this on an existing key will have no effect.
+    EOT
+  default     = true
+}
+
 variable "project" {
   type        = string
   description = "Project that these resources are supporting."
@@ -59,6 +69,34 @@ variable "recovery_window" {
   validation {
     condition     = var.recovery_window == 0 || (var.recovery_window > 6 && var.recovery_window < 31)
     error_message = "Recovery window must be between 7 and 30, or 0 to disable recovery."
+  }
+}
+
+variable "replication" {
+  type = object({
+    enabled = optional(bool, false)
+    kms_arn = optional(string, null)
+    region  = optional(string, null)
+  })
+  description = <<-EOT
+    Cross-region replication settings for the secrets.
+
+    - `enabled`: Whether to replicate the secrets to another region.
+    - `kms_arn`: ARN of an existing KMS key in the replica region to encrypt the
+      replicas. Required when `create_kms_key` is `false`. When not set, the
+      module replicates its own key if it's multi-Region, or creates a new key
+      in the replica region if it isn't.
+    - `region`: Region to replicate to. Defaults to `us-west-2`, or `us-east-1`
+      if the secrets are in a `us-west-*` region.
+    EOT
+  default     = {}
+
+  validation {
+    condition = (
+      var.replication.region == null
+      || contains(["us-east-1", "us-east-2", "us-west-1", "us-west-2"], var.replication.region)
+    )
+    error_message = "replication.region must be one of us-east-1, us-east-2, us-west-1, or us-west-2."
   }
 }
 
