@@ -13,17 +13,6 @@ variable "create_kms_key" {
   default     = true
 }
 
-variable "enable_replication" {
-  type        = bool
-  description = <<-EOT
-    Whether to replicate the KMS key and secrets to `replica_region`. Requires
-    `create_kms_key` to be `true`. Enabling this on an existing deployment
-    replaces the KMS key, since a single-Region key can't be converted to a
-    multi-Region key.
-    EOT
-  default     = false
-}
-
 variable "environment" {
   type        = string
   description = "Environment for the deployment."
@@ -53,6 +42,16 @@ variable "kms_key_arn" {
   default     = null
 }
 
+variable "kms_multi_region" {
+  type        = bool
+  description = <<-EOT
+    Whether the KMS key is created as multi-Region. Only used if
+    `create_kms_key` is set to `true`. This setting can only be configured at
+    creation; changing this on an existing key will have no effect.
+    EOT
+  default     = true
+}
+
 variable "project" {
   type        = string
   description = "Project that these resources are supporting."
@@ -73,18 +72,31 @@ variable "recovery_window" {
   }
 }
 
-variable "replica_region" {
-  type        = string
+variable "replication" {
+  type = object({
+    enabled = optional(bool, false)
+    kms_arn = optional(string, null)
+    region  = optional(string, null)
+  })
   description = <<-EOT
-    Region to replicate the KMS key and secrets to. Only used if
-    `enable_replication` is set to `true`. Must be a US region, and must be
-    different from the current region.
+    Cross-region replication settings for the secrets.
+
+    - `enabled`: Whether to replicate the secrets to another region.
+    - `kms_arn`: ARN of an existing KMS key in the replica region to encrypt the
+      replicas. Required when `create_kms_key` is `false`. When not set, the
+      module replicates its own key if it's multi-Region, or creates a new key
+      in the replica region if it isn't.
+    - `region`: Region to replicate to. Defaults to `us-west-2`, or `us-east-1`
+      if the secrets are in a `us-west-*` region.
     EOT
-  default     = "us-west-2"
+  default     = {}
 
   validation {
-    condition     = contains(["us-east-1", "us-east-2", "us-west-1", "us-west-2"], var.replica_region)
-    error_message = "Replica region must be one of us-east-1, us-east-2, us-west-1, or us-west-2."
+    condition = (
+      var.replication.region == null
+      || contains(["us-east-1", "us-east-2", "us-west-1", "us-west-2"], var.replication.region)
+    )
+    error_message = "replication.region must be one of us-east-1, us-east-2, us-west-1, or us-west-2."
   }
 }
 

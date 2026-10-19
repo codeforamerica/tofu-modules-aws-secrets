@@ -18,10 +18,10 @@ module "secrets_manager" {
   kms_key_id              = local.kms_key_id
   secret_string           = each.value.start_value
 
-  replica = var.enable_replication ? {
-    (var.replica_region) = {
-      region     = var.replica_region
-      kms_key_id = aws_kms_replica_key.secrets["this"].arn
+  replica = var.replication.enabled ? {
+    (local.replica_region) = {
+      region     = local.replica_region
+      kms_key_id = local.replica_kms_key_arn
     }
   } : {}
 

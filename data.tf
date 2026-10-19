@@ -5,13 +5,13 @@ data "aws_partition" "current" {}
 data "aws_region" "current" {
   lifecycle {
     postcondition {
-      condition     = !var.enable_replication || var.create_kms_key
-      error_message = "enable_replication requires create_kms_key to be true."
+      condition     = !var.replication.enabled || var.create_kms_key || var.replication.kms_arn != null
+      error_message = "When create_kms_key is false, replication.kms_arn must be provided."
     }
 
     postcondition {
-      condition     = !var.enable_replication || var.replica_region != self.region
-      error_message = "replica_region must be different from the current region."
+      condition     = !var.replication.enabled || var.replication.region != self.region
+      error_message = "replication.region must be different from the current region."
     }
   }
 }

@@ -64,25 +64,34 @@ kms_key_arn    = aws_kms_key.example.arn
 
 ### Replication
 
-To make secrets available in a second region for disaster recovery, set
-`enable_replication`. The module will create the KMS key as a multi-Region key,
-create a replica of it in `replica_region` (`us-west-2` by default), and
-replicate each secret there using the replica key. If your primary region is
-`us-west-2`, set `replica_region` to `us-east-2`.
+To make secrets available in a second region for disaster recovery, enable
+replication. Each secret is replicated to `us-west-2`, or to `us-east-1` if the
+secrets are in a `us-west-*` region. Set `region` to choose a different one.
 
 ```hcl
-enable_replication = true
+replication = {
+  enabled = true
+}
 ```
 
-> [!CAUTION]
-> A single-Region KMS key can't be converted to a multi-Region key. Enabling
-> replication on an existing deployment replaces the key. The new key is created
-> first and the secrets are re-encrypted with it, then the old key is scheduled
-> for deletion after `key_recovery_period` days. Secret versions other than
-> `AWSCURRENT`, `AWSPENDING`, and `AWSPREVIOUS` stay encrypted with the old key
-> and become unreadable once it's deleted.
+The KMS key for the replicas is chosen in this order:
 
-Replication requires `create_kms_key` to be `true`.
+1. If `kms_arn` is set, that key is used.
+1. If the module created a multi-Region key, a replica of that key is created in
+   the replica region.
+1. If the module created a single-Region key, a new single-Region key is created
+   in the replica region. The plan emits a warning when `kms_multi_region` is
+   `true` but the existing key is single-Region, since that setting can't be
+   changed after the key is created.
+
+When using an existing key for the secrets (`create_kms_key = false`), `kms_arn`
+is required.
+
+| Name    | Description                                                                         | Type     | Default | Required    |
+| ------- | ----------------------------------------------------------------------------------- | -------- | ------- | ----------- |
+| enabled | Whether to replicate the secrets to another region.                                 | `bool`   | `false` | no          |
+| kms_arn | ARN of an existing KMS key in the replica region to encrypt the replicas.           | `string` | `null`  | conditional |
+| region  | Region to replicate to. Must be `us-east-1`, `us-east-2`, `us-west-1`, or `us-west-2`. | `string` | `null`  | no          |
 
 ## Inputs
 
@@ -94,9 +103,9 @@ Replication requires `create_kms_key` to be `true`.
 | create_kms_key      | Whether to create a new KMS key for encrypting secrets. If set to `false`, `kms_key_arn` must be provided.                                                                                                                 | `bool`        | `true`  | no          |
 | environment         | Environment for the project.                                                                                                                                                                                               | `string`      | `"dev"` | no          |
 | key_recovery_period | Recovery period for deleted KMS keys in days. Must be between 7 and 30. Only used if `create_kms_key` is set to `true`.                                                                                                    | `number`      | `30`    | no          |
+| kms_multi_region    | Whether the KMS key is created as multi-Region. Only used if `create_kms_key` is `true`, and only at creation.                                                                                                            | `bool`        | `true`  | no          |
 | recovery_window     | Recovery window for deleted secrets, in days. Must be between 7 and 30, or 0 to disable recovery when the secret is deleted. This value can be overridden for each secret by setting the `recovery_window` for the secret. | `number`      | `30`    | no          |
-| enable_replication  | Whether to replicate the KMS key and secrets to `replica_region`. Requires `create_kms_key` to be `true`.                                                                                                                 | `bool`        | `false` | no          |
-| replica_region      | Region to replicate the KMS key and secrets to. Only used if `enable_replication` is `true`. Must be `us-east-1`, `us-east-2`, `us-west-1`, or `us-west-2`, and different from the current region.                      | `string`      | `"us-west-2"` | no    |
+| [replication]       | Cross-region replication settings for the secrets.                                                                                                                                                                         | `object`      | `{}`    | no          |
 | [secrets]           | Secrets to be created.                                                                                                                                                                                                     | `map(object)` | `{}`    | no          |
 | service             | Optional service that these resources are supporting. Example: `"api"`, `"web"`, `"worker"`                                                                                                                                | `string`      | n/a     | no          |
 | tags                | Optional tags to be applied to all resources.                                                                                                                                                                              | `list`        | `[]`    | no          |
@@ -151,11 +160,12 @@ applied.
 | ------------- | -------------------------------------------------------------------------------- | ------------- |
 | kms_key_alias | Alias for the created KMS key. If `kms_key_arn`is provided, this will be `null`. | `string`      |
 | kms_key_arn   | ARN of the KMS key used for encryption.                                          | `string`      |
-| kms_replica_key_arn | ARN of the replica KMS key. If `enable_replication` is `false`, this will be `null`. | `string` |
+| kms_replica_key_arn | ARN of the KMS key used to encrypt the replicas. If replication isn't enabled, this will be `null`. | `string` |
 | secrets       | A map of created secrets.                                                        | `map(object)` |
 
 [2.0.0]: CHANGELOG.md#200-2025-08-19
 [badge-release]: https://img.shields.io/github/v/release/codeforamerica/tofu-modules-aws-secrets?logo=github&label=Latest%20Release
 [latest-release]: https://github.com/codeforamerica/tofu-modules-aws-secrets/releases/latest
+[replication]: #replication
 [secrets]: #secrets
 [secrets-manager]: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html
